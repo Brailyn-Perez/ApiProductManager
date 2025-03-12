@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductManager.API.DTOS.Category;
+using ProductManager.API.Entities;
 
 namespace ProductManager.API.Controllers
 {

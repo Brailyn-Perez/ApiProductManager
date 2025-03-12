@@ -1,7 +1,9 @@
 ﻿using ProductManager.API.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProductManager.API.Entities
 {
+    [Table("Products")]
     public class Product
     {
         public int Id { get; set; }
