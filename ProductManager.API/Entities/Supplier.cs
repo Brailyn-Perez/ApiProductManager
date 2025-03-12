@@ -1,8 +1,14 @@
-﻿public class Supplier
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Contact { get; set; }
+﻿
+using ProductManager.API.Entities;
 
-    public ICollection<Product> Products { get; set; }
+namespace ProductManager.API.Entities
+{
+    public class Supplier
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Contact { get; set; }
+
+        public ICollection<Product> Products { get; set; }
+    }
 }
