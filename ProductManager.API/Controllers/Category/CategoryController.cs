@@ -43,6 +43,10 @@ namespace ProductManager.API.Controllers
         [HttpPost]
         public async Task<ActionResult<CategoryDTO>> CreateCategory(CategoryCreateOrUpdateDTO createDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var category = new Category { Name = createDto.Name };
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
@@ -54,6 +58,10 @@ namespace ProductManager.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(int id, CategoryCreateOrUpdateDTO updateDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var category = await _context.Categories.FindAsync(id);
             if (category == null)
                 return NotFound();

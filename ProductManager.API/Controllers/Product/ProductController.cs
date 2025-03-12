@@ -58,6 +58,11 @@ namespace ProductManager.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ProductDTO>> CreateProduct(CreateProductDTO createDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var product = new Product
             {
                 Name = createDto.Name,
@@ -84,6 +89,10 @@ namespace ProductManager.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, UpdateProductDTO updateDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var product = await _context.Products.FindAsync(id);
             if (product == null)
                 return NotFound();
