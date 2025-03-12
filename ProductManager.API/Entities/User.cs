@@ -1,5 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-public partial class User
+
+namespace ProductManager.API.Entities.User;
+
+public class User
 {
     public int Id { get; set; }
 
@@ -14,7 +17,9 @@ public partial class User
     public string? EMail { get; set; }
 
     [Required]
-    [MaxLength(50)]
+    [MaxLength(100)]
     [MinLength(10)]
     public string? Password { get; set; }
 }
+
+

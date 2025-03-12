@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProductManager.API.Entities.User;
 
 public class ApplicationDbContext : DbContext
 {
