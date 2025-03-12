@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace ProductManager.API.Controllers.Supplier
 {
@@ -7,5 +6,10 @@ namespace ProductManager.API.Controllers.Supplier
     [ApiController]
     public class SupplierController : ControllerBase
     {
+        private readonly ApplicationDbContext _context;
+        public SupplierController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
     }
 }

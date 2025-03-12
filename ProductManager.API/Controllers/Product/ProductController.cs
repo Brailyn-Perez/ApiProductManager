@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace ProductManager.API.Controllers.Product
 {
@@ -7,5 +6,10 @@ namespace ProductManager.API.Controllers.Product
     [ApiController]
     public class ProductController : ControllerBase
     {
+        private readonly ApplicationDbContext _context;
+        public ProductController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
     }
 }
