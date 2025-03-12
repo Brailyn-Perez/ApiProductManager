@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using ProductManager.API.DTOS.Product;
 using ProductManager.API.Entities;
 
-
 namespace ProductManager.API.Controllers
 {
     [Route("api/[controller]")]
@@ -107,5 +106,95 @@ namespace ProductManager.API.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("product-stats")]
+        public async Task<ActionResult> GetProductStats()
+        {
+            var products = await _context.Products.ToListAsync();
+
+            if (!products.Any())
+            {
+                return NotFound("No products found.");
+            }
+
+            var maxPriceProduct = products.OrderByDescending(p => p.Price).FirstOrDefault();
+            var minPriceProduct = products.OrderBy(p => p.Price).FirstOrDefault();
+            var totalPrice = products.Sum(p => p.Price);
+            var averagePrice = products.Average(p => p.Price);
+
+            var result = new
+            {
+                MaxPriceProduct = maxPriceProduct != null ? new
+                {
+                    maxPriceProduct.Name,
+                    maxPriceProduct.Price
+                } : null,
+                MinPriceProduct = minPriceProduct != null ? new
+                {
+                    minPriceProduct.Name,
+                    minPriceProduct.Price
+                } : null,
+                TotalPrice = totalPrice,
+                AveragePrice = averagePrice
+            };
+
+            return Ok(result);
+        }
+
+        [HttpGet("category/{categoryId}")]
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProductsByCategory(int categoryId)
+        {
+            var products = await _context.Products
+                .Where(p => p.CategoryId == categoryId)
+                .Select(p => new ProductDTO
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                    Stock = p.Stock,
+                    SupplierId = p.SupplierId,
+                    CategoryId = p.CategoryId
+                })
+                .ToListAsync();
+
+            if (!products.Any())
+            {
+                return NotFound($"No products found for category {categoryId}");
+            }
+
+            return Ok(products);
+        }
+
+        [HttpGet("supplier/{supplierId}")]
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProductsBySupplier(int supplierId)
+        {
+            var products = await _context.Products
+                .Where(p => p.SupplierId == supplierId)
+                .Select(p => new ProductDTO
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                    Stock = p.Stock,
+                    SupplierId = p.SupplierId,
+                    CategoryId = p.CategoryId
+                })
+                .ToListAsync();
+
+            if (!products.Any())
+            {
+                return NotFound($"No products found for supplier {supplierId}");
+            }
+
+            return Ok(products);
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetTotalProductCount()
+        {
+            var productCount = await _context.Products.CountAsync();
+            return Ok(productCount);
+        }
+
     }
 }
