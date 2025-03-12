@@ -18,7 +18,7 @@ namespace ProductManager.API.Controllers
             _context = context;
         }
 
-        // Obtener todas las categorías
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategories()
         {
@@ -28,8 +28,6 @@ namespace ProductManager.API.Controllers
 
             return Ok(categories);
         }
-
-        // Obtener una categoría por ID
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDTO>> GetCategory(int id)
         {
@@ -40,7 +38,6 @@ namespace ProductManager.API.Controllers
             return Ok(new CategoryDTO { Id = category.Id, Name = category.Name });
         }
 
-        // Crear una nueva categoría
         [HttpPost]
         public async Task<ActionResult<CategoryDTO>> CreateCategory(CategoryCreateOrUpdateDTO createDto)
         {
@@ -51,7 +48,7 @@ namespace ProductManager.API.Controllers
             return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, new CategoryDTO { Id = category.Id, Name = category.Name });
         }
 
-        // Actualizar una categoría
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(int id, CategoryCreateOrUpdateDTO updateDto)
         {
@@ -65,7 +62,7 @@ namespace ProductManager.API.Controllers
             return NoContent();
         }
 
-        // Eliminar una categoría
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
