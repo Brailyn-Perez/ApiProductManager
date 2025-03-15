@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductManager.DAL", "Produ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductManager.BL", "ProductManager.BL\ProductManager.BL.csproj", "{FAA7999B-E810-4DBB-9D6D-70A70779004F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductManager.IOC", "ProductManager.IOC\ProductManager.IOC.csproj", "{C94AFFC8-C117-4C08-A620-D53B48B56BC7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{FAA7999B-E810-4DBB-9D6D-70A70779004F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAA7999B-E810-4DBB-9D6D-70A70779004F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAA7999B-E810-4DBB-9D6D-70A70779004F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C94AFFC8-C117-4C08-A620-D53B48B56BC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C94AFFC8-C117-4C08-A620-D53B48B56BC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C94AFFC8-C117-4C08-A620-D53B48B56BC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C94AFFC8-C117-4C08-A620-D53B48B56BC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

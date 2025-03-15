@@ -2,6 +2,7 @@
 using ProductManager.DAL.Base;
 using ProductManager.DAL.Entities;
 using ProductManager.DAL.Interfaces.Repositories;
+using System.Linq.Expressions;
 
 namespace ProductManager.DAL.Repositories
 {
@@ -14,5 +15,11 @@ namespace ProductManager.DAL.Repositories
             _context = context;
             _logger = logger;
         }
+
+        public override Task<bool> ExistsAsync(Expression<Func<User, bool>> filter)
+        {
+            return base.ExistsAsync(filter);
+        }
+
     }
 }

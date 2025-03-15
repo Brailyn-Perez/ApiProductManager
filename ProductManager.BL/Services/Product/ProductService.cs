@@ -1,16 +1,15 @@
-﻿
-using ProductManager.BL.DTOS.Supplier;
-using ProductManager.BL.Interfaces.Services;
+﻿using ProductManager.BL.DTOS.Product;
+using ProductManager.BL.Interfaces.Product;
 using ProductManager.DAL.Base;
 using ProductManager.DAL.Repositories;
 
-namespace ProductManager.BL.Services
+namespace ProductManager.BL.Services.Product
 {
-    public class SupplierService : ISupplierService
+    public class ProductService : IProductService
     {
-        private readonly SupplierRepository _repository;
+        private readonly ProductRepository _repository;
 
-        public SupplierService(SupplierRepository repository)
+        public ProductService(ProductRepository repository)
         {
             _repository = repository;
         }
@@ -25,17 +24,17 @@ namespace ProductManager.BL.Services
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> Remove(DeleteSupplierDTO dto)
+        public Task<OperationResult> Remove(DeleteProductDTO dto)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> Save(CreateOrUpdateSupplierDTO dto)
+        public Task<OperationResult> Save(CreateProductDTO dto)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> Update(CreateOrUpdateSupplierDTO dto)
+        public Task<OperationResult> Update(UpdateProductDTO dto)
         {
             throw new NotImplementedException();
         }

@@ -1,16 +1,15 @@
-﻿using ProductManager.BL.DTOS.User;
-using ProductManager.BL.DTOS.User.CreateUserDTO;
-using ProductManager.BL.Interfaces.Services;
+﻿using ProductManager.BL.DTOS.Category;
+using ProductManager.BL.Interfaces.Category;
 using ProductManager.DAL.Base;
 using ProductManager.DAL.Repositories;
 
-namespace ProductManager.BL.Services
+namespace ProductManager.BL.Services.Category
 {
-    public class UserService : IUserService
+    public class CategoryService : ICategoryService
     {
-        private readonly UserRepository _repository;
+        private readonly CategoryRepository _repository;
 
-        public UserService(UserRepository repository)
+        public CategoryService(CategoryRepository repository)
         {
             _repository = repository;
         }
@@ -25,17 +24,17 @@ namespace ProductManager.BL.Services
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> Remove(DeleteUserDTO dto)
+        public Task<OperationResult> Remove(RemoveCategoryDTO dto)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> Save(CreateUserDTO dto)
+        public Task<OperationResult> Save(CategoryDTO dto)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> Update(UpdateUserDTO dto)
+        public Task<OperationResult> Update(CategoryCreateOrUpdateDTO dto)
         {
             throw new NotImplementedException();
         }

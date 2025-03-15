@@ -1,6 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using ProductManager.BL.Interfaces.Category;
+using ProductManager.BL.Interfaces.Product;
+using ProductManager.BL.Interfaces.Supplier;
+using ProductManager.BL.Interfaces.User;
+using ProductManager.BL.Services.Category;
+using ProductManager.BL.Services.Product;
+using ProductManager.BL.Services.Supplier;
+using ProductManager.BL.Services.User;
 using System.Text;
 
 namespace API_WhitJsonWebToken_JWT_.API.Services
@@ -16,7 +26,7 @@ namespace API_WhitJsonWebToken_JWT_.API.Services
             #endregion
 
             #region "JWS Config"
-            services.AddSingleton<Customs.Utilitys>();
+            services.AddSingleton<IJwtService>();
             services.AddAuthentication(configureOptions =>
             {
                 configureOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -35,6 +45,14 @@ namespace API_WhitJsonWebToken_JWT_.API.Services
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:key"]!))
                 };
             });
+            #endregion
+
+            #region "Services Config"
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ISupplierService, SupplierService>();
             #endregion
             return services;
         }

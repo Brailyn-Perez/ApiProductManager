@@ -1,16 +1,19 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using ProductManager.DAL.Entities;
+﻿
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using ProductManager.BL.DTOS.User;
+using ProductManager.BL.Interfaces.User;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace API_WhitJsonWebToken_JWT_.API.Customs
+namespace ProductManager.BL.Services.User
 {
-    public class Utilitys
+    public class JwtService : IJwtService
     {
         private readonly IConfiguration _configuration;
-        public Utilitys(IConfiguration configuration)
+        public JwtService(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -30,16 +33,14 @@ namespace API_WhitJsonWebToken_JWT_.API.Customs
 
                 return stringBuilder.ToString();
             }
-
         }
 
-        public string generateJWT(User user)
+        public string generateJWT(LoginUsersDTO user)
         {
             var userClaims = new[]
             {
-                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.EMail!),
-             };
+            };
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -57,7 +58,6 @@ namespace API_WhitJsonWebToken_JWT_.API.Customs
 
             return token;
         }
-
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
@@ -103,7 +103,5 @@ namespace API_WhitJsonWebToken_JWT_.API.Customs
                 throw;
             }
         }
-
-
     }
 }
