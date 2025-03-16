@@ -1,15 +1,15 @@
 ﻿using ProductManager.BL.DTOS.Supplier;
 using ProductManager.BL.Interfaces.Supplier;
 using ProductManager.DAL.Base;
-using ProductManager.DAL.Repositories;
+using ProductManager.DAL.Interfaces.Repositories;
 
 namespace ProductManager.BL.Services.Supplier
 {
     public class SupplierService : ISupplierService
     {
-        private readonly SupplierRepository _repository;
+        private readonly ISupplierRepository _repository;
 
-        public SupplierService(SupplierRepository repository)
+        public SupplierService(ISupplierRepository repository)
         {
             _repository = repository;
         }

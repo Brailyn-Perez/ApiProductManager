@@ -2,15 +2,15 @@
 using ProductManager.BL.DTOS.User.CreateUserDTO;
 using ProductManager.BL.Interfaces.User;
 using ProductManager.DAL.Base;
-using ProductManager.DAL.Repositories;
+using ProductManager.DAL.Interfaces.Repositories;
 
 namespace ProductManager.BL.Services.User
 {
     public class UserService : IUserService
     {
-        private readonly UserRepository _repository;
+        private readonly IUserRepository _repository;
 
-        public UserService(UserRepository repository)
+        public UserService(IUserRepository repository)
         {
             _repository = repository;
         }

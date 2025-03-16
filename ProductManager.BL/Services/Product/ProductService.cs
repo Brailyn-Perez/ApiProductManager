@@ -1,15 +1,15 @@
 ﻿using ProductManager.BL.DTOS.Product;
 using ProductManager.BL.Interfaces.Product;
 using ProductManager.DAL.Base;
-using ProductManager.DAL.Repositories;
+using ProductManager.DAL.Interfaces.Repositories;
 
 namespace ProductManager.BL.Services.Product
 {
     public class ProductService : IProductService
     {
-        private readonly ProductRepository _repository;
+        private readonly IProductRepository _repository;
 
-        public ProductService(ProductRepository repository)
+        public ProductService(IProductRepository repository)
         {
             _repository = repository;
         }

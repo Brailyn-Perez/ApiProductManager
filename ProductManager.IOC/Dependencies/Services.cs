@@ -11,6 +11,8 @@ using ProductManager.BL.Services.Category;
 using ProductManager.BL.Services.Product;
 using ProductManager.BL.Services.Supplier;
 using ProductManager.BL.Services.User;
+using ProductManager.DAL.Interfaces.Repositories;
+using ProductManager.DAL.Repositories;
 using System.Text;
 
 namespace API_WhitJsonWebToken_JWT_.API.Services
@@ -26,7 +28,7 @@ namespace API_WhitJsonWebToken_JWT_.API.Services
             #endregion
 
             #region "JWS Config"
-            services.AddSingleton<IJwtService>();
+            services.AddSingleton<IJwtService , JwtService>();
             services.AddAuthentication(configureOptions =>
             {
                 configureOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -53,6 +55,13 @@ namespace API_WhitJsonWebToken_JWT_.API.Services
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ISupplierService, SupplierService>();
+            #endregion
+
+            #region "Repositories Config"
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ISupplierRepository, SupplierRepository>();
             #endregion
             return services;
         }
