@@ -63,6 +63,8 @@ namespace API_WhitJsonWebToken_JWT_.API.Services
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ISupplierRepository, SupplierRepository>();
             #endregion
+
+           
             return services;
         }
     }

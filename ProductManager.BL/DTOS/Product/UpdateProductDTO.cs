@@ -5,6 +5,9 @@ namespace ProductManager.BL.DTOS.Product
     public class UpdateProductDTO
     {
         [Required]
+        [Range(1, int.MaxValue)]
+        public int Id { get; set; }
+        [Required]
         [MaxLength(50)]
         [MinLength(3)]
         public string Name { get; set; }

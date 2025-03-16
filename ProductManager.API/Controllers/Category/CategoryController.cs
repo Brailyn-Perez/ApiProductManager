@@ -49,5 +49,18 @@ namespace ProductManager.API.Controllers
             }
             return BadRequest(result.Message);
         }
+
+        [HttpPut]
+        public async Task<IActionResult> Update(UpdateCategoryDTO Updatecategory)
+        {
+            var result = await _categoryService.Update(Updatecategory);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
+
+
     }
 }

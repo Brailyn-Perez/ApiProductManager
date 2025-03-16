@@ -14,14 +14,48 @@ namespace ProductManager.BL.Services.Supplier
             _repository = repository;
         }
 
-        public Task<OperationResult> GeAll()
+        public async Task<OperationResult> GeAll()
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                var suppliers = await _repository.GetAllAsync();
+                suppliers.Select(x => new SupplierDTO
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Contact = x.Contact
+                }).ToList();
+                result.Success = true;
+                result.Data = suppliers;
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = ex.Message;
+            }
+            return result;
         }
 
-        public Task<OperationResult> GeById(int id)
+        public async Task<OperationResult> GeById(int id)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                var supplier = await _repository.GetEntityByIdAsync(id);
+                result.Data = new SupplierDTO
+                {
+                    Id = supplier.Id,
+                    Name = supplier.Name,
+                    Contact = supplier.Contact
+                };
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = ex.Message;
+            }
+            return result;
         }
 
         public Task<OperationResult> Remove(DeleteSupplierDTO dto)
@@ -29,14 +63,47 @@ namespace ProductManager.BL.Services.Supplier
             throw new NotImplementedException();
         }
 
-        public Task<OperationResult> Save(CreateOrUpdateSupplierDTO dto)
+        public async Task<OperationResult> Save(CreateOrUpdateSupplierDTO dto)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                var supplier = new DAL.Entities.Supplier
+                {
+                    Name = dto.Name,
+                    Contact = dto.Contact
+                };
+                await _repository.SaveEntityAsync(supplier);
+                result.Success = true;
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = ex.Message;
+            }
+            return result;
         }
 
-        public Task<OperationResult> Update(CreateOrUpdateSupplierDTO dto)
+        public async Task<OperationResult> Update(UpdateSupplierDTO dto)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                var supplier = new DAL.Entities.Supplier
+                {
+                    Id = dto.Id,
+                    Name = dto.Name,
+                    Contact = dto.Contact
+                };
+                await _repository.UpdateEntityAsync(supplier);
+                result.Success = true;
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = ex.Message;
+            }
+            return result;
         }
     }
 }
