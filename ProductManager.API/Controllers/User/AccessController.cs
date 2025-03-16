@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProductManager.BL.DTOS.User;
 using ProductManager.BL.DTOS.User.CreateUserDTO;
 using ProductManager.BL.Interfaces.User;
+using System.Text.Json;
 
 namespace ProductManager.API.Controllers.User
 {
@@ -44,6 +45,25 @@ namespace ProductManager.API.Controllers.User
                 return BadRequest(result.Message);
 
             return Ok(result.Data);
+        }
+
+        [HttpGet("log")]
+        public async Task<IActionResult> GetLog()
+        {
+            string logFilePath = "user_registration_log.json";
+            if (!System.IO.File.Exists(logFilePath))
+            {
+                return NotFound("Log file not found.");
+            }
+
+            var logContent = await System.IO.File.ReadAllTextAsync(logFilePath);
+            if (string.IsNullOrEmpty(logContent))
+            {
+                return NoContent();
+            }
+
+            var logEntries = JsonSerializer.Deserialize<object>(logContent);
+            return Ok(logEntries);
         }
     }
 }

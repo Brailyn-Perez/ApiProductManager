@@ -4,6 +4,7 @@ using ProductManager.DAL.Base;
 using ProductManager.DAL.Entities;
 using ProductManager.DAL.Interfaces.Repositories;
 using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace ProductManager.DAL.Repositories
 {
@@ -56,6 +57,19 @@ namespace ProductManager.DAL.Repositories
 
                 await base.SaveEntityAsync(entity);
 
+                string logFilePath = "user_registration_log.json";
+                var logEntry = new { Date = DateTime.Now, User = entity };
+
+                List<object> logEntries = new List<object>();
+                if (File.Exists(logFilePath))
+                {
+                    var existingLog = await File.ReadAllTextAsync(logFilePath);
+                    logEntries = JsonSerializer.Deserialize<List<object>>(existingLog) ?? new List<object>();
+                }
+
+                logEntries.Add(logEntry);
+                var newLog = JsonSerializer.Serialize(logEntries);
+                await File.WriteAllTextAsync(logFilePath, newLog);
             }
             catch (Exception ex)
             {
@@ -65,5 +79,6 @@ namespace ProductManager.DAL.Repositories
             }
             return result;
         }
+
     }
 }
