@@ -26,12 +26,10 @@ namespace ProductManager.DAL.Base
         public virtual async Task<OperationResult> UpdateEntityAsync(TEntity entity)
         {
             OperationResult result = new();
-            if (entity == null)
-            {
-                result.Success = false;
-                result.Message = "La entidad no puede ser nula.";
-                return result;
-            }
+
+            var isValid = await BaseValidator<TEntity>.ValidateEntityAsync(entity);
+            if (!isValid.Success)
+                return isValid;
 
             try
             {
@@ -52,12 +50,11 @@ namespace ProductManager.DAL.Base
         public virtual async Task<OperationResult> SaveEntityAsync(TEntity entity)
         {
             OperationResult result = new();
-            if (entity == null)
-            {
-                result.Success = false;
-                result.Message = "La entidad no puede ser nula.";
-                return result;
-            }
+
+            var isValid = await BaseValidator<TEntity>.ValidateEntityAsync(entity);
+            if (!isValid.Success)
+                return isValid;
+
 
             try
             {

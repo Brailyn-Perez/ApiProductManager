@@ -42,6 +42,10 @@ namespace ProductManager.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Save(CreateProductDTO CreateProduct)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _productService.Save(CreateProduct);
             if (result.Success)
             {
@@ -53,6 +57,10 @@ namespace ProductManager.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(UpdateProductDTO UpdateProduct)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _productService.Update(UpdateProduct);
             if (result.Success)
             {

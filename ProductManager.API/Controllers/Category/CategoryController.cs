@@ -42,6 +42,10 @@ namespace ProductManager.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Save(CategoryCreateOrUpdateDTO Createcategory)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _categoryService.Save(Createcategory);
             if (result.Success)
             {
@@ -53,6 +57,10 @@ namespace ProductManager.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(UpdateCategoryDTO Updatecategory)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _categoryService.Update(Updatecategory);
             if (result.Success)
             {

@@ -42,6 +42,10 @@ namespace ProductManager.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Save(CreateOrUpdateSupplierDTO supplier)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _supplierService.Save(supplier);
             if (result.Success)
             {
@@ -53,6 +57,10 @@ namespace ProductManager.API.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(UpdateSupplierDTO supplier)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _supplierService.Update(supplier);
             if (result.Success)
             {
