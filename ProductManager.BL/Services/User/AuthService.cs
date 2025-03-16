@@ -9,20 +9,75 @@ namespace ProductManager.BL.Services.User
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _repository;
+        private readonly IJwtService _jwtService;
 
-        public AuthService(IUserRepository repository)
+        public AuthService(IUserRepository repository, IJwtService jwtService)
         {
             _repository = repository;
+            _jwtService = jwtService;
         }
 
-        public Task<string> LoginUserAsync(LoginUsersDTO user)
+        public async Task<OperationResult> LoginUserAsync(LoginUsersDTO user)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                var User = new DAL.Entities.User
+                {
+                    EMail = user.EMail,
+                    Password = _jwtService.encryptSHA256(user.Password),
+                };
+
+                result = await _repository.Login(User);
+
+                if (!result.Success)
+                {
+                    result.Success = false;
+                    result.Message = "Usuario o contraseña incorrecta";
+                    return result;
+                }            
+                
+                string TOKEN = _jwtService.generateJWT(user);
+                result.Message = "Login exitoso";
+                result.Data = TOKEN;
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error en login: {ex.Message}";
+                return result;
+            }
+            return result;
         }
 
-        public Task<OperationResult> RegisterUserAsync(CreateUserDTO user)
+        public async Task<OperationResult> RegisterUserAsync(CreateUserDTO user)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                var entity = new DAL.Entities.User
+                {
+                    Name = user.Name,
+                    EMail = user.EMail,
+                    Password = _jwtService.encryptSHA256(user.Password),
+                };
+
+                var saveResult = await _repository.SaveEntityAsync(entity);
+
+                if (!saveResult.Success)
+                {
+                    result.Success = false;
+                    result.Message = saveResult.Message;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al ingresar los datos.{ex.Message}";
+
+            }
+            return result;
         }
     }
 }

@@ -7,6 +7,6 @@ namespace ProductManager.BL.Interfaces.User
     public interface IAuthService
     {
         Task<OperationResult> RegisterUserAsync(CreateUserDTO user);
-        Task<string> LoginUserAsync(LoginUsersDTO user);
+        Task<OperationResult> LoginUserAsync(LoginUsersDTO user);
     }
 }

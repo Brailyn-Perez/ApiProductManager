@@ -52,6 +52,7 @@ namespace API_WhitJsonWebToken_JWT_.API.Services
             #region "Services Config"
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ISupplierService, SupplierService>();
@@ -64,7 +65,6 @@ namespace API_WhitJsonWebToken_JWT_.API.Services
             services.AddScoped<ISupplierRepository, SupplierRepository>();
             #endregion
 
-           
             return services;
         }
     }
