@@ -17,34 +17,48 @@ namespace ProductManager.API.Controllers
         {
             _supplierService = supplierService;
         }
-
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var suppliers = _supplierService.GeAll();
-            return Ok(suppliers);
+            var result = await _supplierService.GeAll();
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var supplier = _supplierService.GeById(id);
-            return Ok(supplier);
+            var result = await _supplierService.GeById(id);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] CreateOrUpdateSupplierDTO supplier)
+        public async Task<IActionResult> Save(CreateOrUpdateSupplierDTO supplier)
         {
-            _supplierService.Save(supplier);
-            return Ok();
+            var result = await _supplierService.Save(supplier);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] UpdateSupplierDTO supplier)
+        [HttpPut]
+        public async Task<IActionResult> Update(UpdateSupplierDTO supplier)
         {
-            supplier.Id = id;
-            _supplierService.Update(supplier);
-            return Ok();
+            var result = await _supplierService.Update(supplier);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
         }
     }
 }
