@@ -32,14 +32,43 @@ namespace ProductManager.DAL.Repositories
             return base.GetEntityByIdAsync(id);
         }
 
-        public override Task<OperationResult> SaveEntityAsync(Supplier entity)
+        public override async Task<OperationResult> SaveEntityAsync(Supplier entity)
         {
-            return base.SaveEntityAsync(entity);
+            OperationResult result = new OperationResult();
+            try
+            {
+                var isValid = await BaseValidator<Supplier>.ValidateEntityAsync(entity);
+                if (!isValid.Success)
+                    return isValid;
+
+                result.Data = await base.SaveEntityAsync(entity);
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error: {ex.Message}";
+                _logger.LogError(ex, ex.Message);
+            }
+            return result;
         }
 
-        public override Task<OperationResult> UpdateEntityAsync(Supplier entity)
+        public override async Task<OperationResult> UpdateEntityAsync(Supplier entity)
         {
-            return base.UpdateEntityAsync(entity);
+            OperationResult result = new OperationResult();
+            try
+            {
+                var isValid = await BaseValidator<Supplier>.ValidateEntityAsync(entity);
+                if (!isValid.Success)
+                    return isValid;
+                result.Data = await base.UpdateEntityAsync(entity);
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error: {ex.Message}";
+                _logger.LogError(ex, ex.Message);
+            }
+            return result;
         }
     }
 }

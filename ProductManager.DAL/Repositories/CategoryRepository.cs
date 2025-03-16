@@ -10,7 +10,7 @@ namespace ProductManager.DAL.Repositories
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<CategoryRepository> _logger;
-        public CategoryRepository(ApplicationDbContext context , ILogger<CategoryRepository> logger) : base(context)
+        public CategoryRepository(ApplicationDbContext context, ILogger<CategoryRepository> logger) : base(context)
         {
             _context = context;
             _logger = logger;
@@ -21,24 +21,68 @@ namespace ProductManager.DAL.Repositories
             return base.GetAllAsync();
         }
 
-        public override Task<OperationResult> GetAllAsync(Expression<Func<Category, bool>> filter)
+        public override async Task<OperationResult> GetAllAsync(Expression<Func<Category, bool>> filter)
         {
-            return base.GetAllAsync(filter);
+            OperationResult result = new OperationResult();
+            try
+            {
+                if (filter is null)
+                {
+                    result.Success = false;
+                    result.Message = "Filter is Null";
+                    return result;
+                }
+                result.Data = await base.GetAllAsync(filter);
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error: {ex.Message}";
+            }
+            return result;
         }
 
-        public override Task<Category> GetEntityByIdAsync(int id)
+        public override async Task<Category> GetEntityByIdAsync(int id)
         {
-            return base.GetEntityByIdAsync(id);
+            return await base.GetEntityByIdAsync(id);
         }
 
-        public override Task<OperationResult> SaveEntityAsync(Category entity)
+        public override async Task<OperationResult> SaveEntityAsync(Category entity)
         {
-            return base.SaveEntityAsync(entity);
+            OperationResult result = new OperationResult();
+            try
+            {
+                var isValid = await BaseValidator<Category>.ValidateEntityAsync(entity);
+                if (!isValid.Success)
+                    return isValid;
+
+                result.Data = await base.SaveEntityAsync(entity);
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error: {ex.Message}";
+            }
+
+            return result;
         }
 
-        public override Task<OperationResult> UpdateEntityAsync(Category entity)
+        public override async Task<OperationResult> UpdateEntityAsync(Category entity)
         {
-            return base.UpdateEntityAsync(entity);
+            OperationResult result = new OperationResult();
+            try
+            {
+                var isValid = await BaseValidator<Category>.ValidateEntityAsync(entity);
+                if (!isValid.Success)
+                    return isValid;
+                result.Data = await base.UpdateEntityAsync(entity);
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error: {ex.Message}";
+            }
+            return result;
         }
     }
 
