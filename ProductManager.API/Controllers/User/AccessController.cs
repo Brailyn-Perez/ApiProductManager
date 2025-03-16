@@ -1,10 +1,9 @@
-﻿using API_WhitJsonWebToken_JWT_.API.Customs;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProductManager.API.DTOS.User.CreateUserDTO;
-using ProductManager.API.DTOS.User;
-using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
+using ProductManager.BL.DTOS.User;
+using ProductManager.BL.DTOS.User.CreateUserDTO;
+using ProductManager.BL.Interfaces.User;
+using System.Text.Json;
 
 namespace ProductManager.API.Controllers.User
 {
@@ -13,83 +12,58 @@ namespace ProductManager.API.Controllers.User
     [ApiController]
     public class AccessController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly Utilitys _utilitys;
-        public AccessController(ApplicationDbContext context, Utilitys utilitys)
+        private readonly IAuthService _authService;
+
+        public AccessController(IAuthService authService)
         {
-            _context = context;
-            _utilitys = utilitys;
+            _authService = authService;
         }
 
-        [HttpPost]
-        [Route("Register")]
-        public async Task<IActionResult> Register(CreateUserDTO createUser)
-        {
-
-            var user = new Entities.User.User()
-            {
-                Name = createUser.Name,
-                EMail = createUser.EMail,
-                Password = _utilitys.encryptSHA256(createUser.Password)
-            };
-
-            if (!ModelState.IsValid)
-            {
-                return StatusCode(StatusCodes.Status200OK, new { isSuccess = false });
-            }
-            await _context.users.AddAsync(user);
-            await _context.SaveChangesAsync();
-
-            if (user.Id != 0)
-                return StatusCode(StatusCodes.Status200OK, new { isSuccess = true });
-            else
-                return StatusCode(StatusCodes.Status200OK, new { isSuccess = false });
-        }
-
-        [HttpPost]
-        [Route("Login")]
-        public async Task<IActionResult> Login(LoginUsersDTO loginUsers)
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterUser([FromBody] CreateUserDTO user)
         {
             if (!ModelState.IsValid)
-            {
-                return StatusCode(StatusCodes.Status200OK, new { isSuccess = false });
-            }
-            var findUser = await _context.users
-                .Where(
-                x => x.EMail == loginUsers.EMail &&
-                x.Password == _utilitys.encryptSHA256(loginUsers.Password)
-                ).FirstOrDefaultAsync();
+                return BadRequest(ModelState);
 
-            if (findUser == null)
-                return StatusCode(StatusCodes.Status200OK, new { isSuccess = false, token = "" });
-            else
-                return StatusCode(StatusCodes.Status200OK, new { isSuccess = true, token = _utilitys.generateJWT(findUser) });
+            var result = await _authService.RegisterUserAsync(user);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok();
         }
 
-        [HttpPost("refresh")]
-        public IActionResult RefreshToken([FromBody] string token)
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginUser([FromBody] LoginUsersDTO user)
         {
-            var principal = _utilitys.GetPrincipalFromExpiredToken(token);
-            if (principal == null)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _authService.LoginUserAsync(user);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok(result.Data);
+        }
+
+        [HttpGet("log")]
+        public async Task<IActionResult> GetLog()
+        {
+            string logFilePath = "user_registration_log.json";
+            if (!System.IO.File.Exists(logFilePath))
             {
-                return BadRequest("Invalid token");
+                return NotFound("Log file not found.");
             }
 
-            var userId = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
+            var logContent = await System.IO.File.ReadAllTextAsync(logFilePath);
+            if (string.IsNullOrEmpty(logContent))
             {
-                return BadRequest("Invalid token");
+                return NoContent();
             }
 
-            var user = new Entities.User.User()
-            {
-                Id = int.Parse(userId),
-                EMail = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
-            };
-
-            var newToken = _utilitys.generateJWT(user);
-            return Ok(new { token = newToken });
-
+            var logEntries = JsonSerializer.Deserialize<object>(logContent);
+            return Ok(logEntries);
         }
     }
 }

@@ -1,89 +1,74 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ProductManager.API.DTOS.Category;
-using ProductManager.API.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
+using ProductManager.BL.DTOS.Category;
+using ProductManager.BL.Interfaces.Category;
+using ProductManager.DAL.Entities;
 
 namespace ProductManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CategoryController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICategoryService _categoryService;
 
-        public CategoryController(ApplicationDbContext context)
+        public CategoryController(ICategoryService categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
 
-
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategories()
+        public async Task<IActionResult> GetAll()
         {
-            var categories = await _context.Categories
-                .Select(c => new CategoryDTO { Id = c.Id, Name = c.Name })
-                .ToListAsync();
-
-            return Ok(categories);
+            var result = await _categoryService.GeAll();
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryDTO>> GetCategory(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-                return NotFound();
-
-            return Ok(new CategoryDTO { Id = category.Id, Name = category.Name });
+            var result = await _categoryService.GeById(id);
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result.Message);
         }
 
         [HttpPost]
-        public async Task<ActionResult<CategoryDTO>> CreateCategory(CategoryCreateOrUpdateDTO createDto)
+        public async Task<IActionResult> Save(CategoryCreateOrUpdateDTO Createcategory)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var category = new Category { Name = createDto.Name };
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, new CategoryDTO { Id = category.Id, Name = category.Name });
+            var result = await _categoryService.Save(Createcategory);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
         }
 
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(int id, CategoryCreateOrUpdateDTO updateDto)
+        [HttpPut]
+        public async Task<IActionResult> Update(UpdateCategoryDTO Updatecategory)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-                return NotFound();
-
-            category.Name = updateDto.Name;
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            var result = await _categoryService.Update(Updatecategory);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
         }
 
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(int id)
-        {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-                return NotFound();
-
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
     }
 }
