@@ -69,5 +69,20 @@ namespace ProductManager.API.Controllers
             return BadRequest(result.Message);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(DeleteProductDTO deleteProduct)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _productService.Remove(deleteProduct);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
+
     }
 }

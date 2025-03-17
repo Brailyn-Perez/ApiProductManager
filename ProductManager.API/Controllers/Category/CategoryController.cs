@@ -69,6 +69,16 @@ namespace ProductManager.API.Controllers
             return BadRequest(result.Message);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Remove(RemoveCategoryDTO Removecategory)
+        {
+            var result = await _categoryService.Remove(Removecategory);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
 
     }
 }

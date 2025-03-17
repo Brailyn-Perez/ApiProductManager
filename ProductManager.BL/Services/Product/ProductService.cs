@@ -64,9 +64,29 @@ namespace ProductManager.BL.Services.Product
             return result;
         }
 
-        public Task<OperationResult> Remove(DeleteProductDTO dto)
+        public async Task<OperationResult> Remove(DeleteProductDTO dto)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                var exists = await _repository.ExistsAsync(x => x.Id == dto.Id && x.Deleted == false);
+                if (!exists)
+                {
+                    result.Success = false;
+                    result.Message = "Producto no encontrado";
+                }
+                var product = await _repository.GetEntityByIdAsync(dto.Id);
+                product.Deleted = true;
+
+                await _repository.UpdateEntityAsync(product);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = ex.Message;
+            }
+            return result;
         }
 
         public async Task<OperationResult> Save(CreateProductDTO dto)
