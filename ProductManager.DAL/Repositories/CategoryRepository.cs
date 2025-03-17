@@ -90,8 +90,6 @@ namespace ProductManager.DAL.Repositories
             }
             return result;
         }
-
-
     }
 
 }

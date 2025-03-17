@@ -66,6 +66,7 @@ namespace ProductManager.DAL.Repositories
                 var isValid = await BaseValidator<Supplier>.ValidateEntityAsync(entity);
                 if (!isValid.Success)
                     return isValid;
+
                 result.Data = await base.UpdateEntityAsync(entity);
             }
             catch (Exception ex)

@@ -20,13 +20,14 @@ namespace ProductManager.BL.Services.Category
             try
             {
                 var categories = await _repository.GetAllAsync();
-                categories.Select(x => new CategoryDTO
+
+                result.Data = categories.Select(x => new CategoryDTO
                 {
                     Id = x.Id,
                     Name = x.Name
                 }).ToList();
+
                 result.Success = true;
-                result.Data = categories;
             }
             catch (Exception ex)
             {
@@ -42,6 +43,13 @@ namespace ProductManager.BL.Services.Category
             try
             {
                 var category = await _repository.GetEntityByIdAsync(id);
+                if (category == null)
+                {
+                    result.Success = false;
+                    result.Message = "La Categoria no Existe";
+                    return result;
+                }
+
                 result.Data = new CategoryDTO
                 {
                     Id = category.Id,
@@ -70,18 +78,20 @@ namespace ProductManager.BL.Services.Category
                 {
                     result.Success = false;
                     result.Message = "La Categoria no Existe";
+                    return result;
                 }
 
-                if (!existProductInThisCategory)
+                if (existProductInThisCategory)
                 {
                     result.Success = false;
                     result.Message = "La Categoria tiene Productos Asociados";
+                    return result;
                 }
 
                 var category = await _repository.GetEntityByIdAsync(dto.Id);
                 category.Deleted = true;
 
-                await _repository.UpdateEntityAsync(category);
+               result = await _repository.UpdateEntityAsync(category);
 
             }
             catch (Exception ex)
@@ -101,7 +111,7 @@ namespace ProductManager.BL.Services.Category
                 {
                     Name = dto.Name
                 };
-                await _repository.SaveEntityAsync(category);
+                result = await _repository.SaveEntityAsync(category);
                 result.Success = true;
                 result.Message = "Categoria Creada Correctamente";
             }
@@ -119,12 +129,19 @@ namespace ProductManager.BL.Services.Category
             OperationResult result = new OperationResult();
             try
             {
-                var category = new DAL.Entities.Category
+                var existCategory = await _repository.ExistsAsync(x => x.Id == dto.Id);
+                if (!existCategory)
                 {
-                    Id = dto.Id,
-                    Name = dto.Name
-                };
-                await _repository.UpdateEntityAsync(category);
+                    result.Success = false;
+                    result.Message = "La Categoria no Existe";
+                    return result;
+                }
+
+                var category = await _repository.GetEntityByIdAsync(dto.Id);
+                category.Name = dto.Name;
+                category.UpdatedAt = DateTime.Now;
+
+                result = await _repository.UpdateEntityAsync(category);
                 result.Success = true;
                 result.Message = "Categoria Actualizada Correctamente";
             }
