@@ -56,9 +56,41 @@ namespace ProductManager.BL.Services.Category
             return result;
         }
 
-        public Task<OperationResult> Remove(RemoveCategoryDTO dto)
+        public async Task<OperationResult> Remove(RemoveCategoryDTO dto)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+
+            try
+            {
+                var existCategory = await _repository.ExistsAsync(x => x.Id == dto.Id && x.Deleted == false);
+
+                var existProductInThisCategory = await _repository.categoryHasProduct(dto.Id);
+
+                if (!existCategory)
+                {
+                    result.Success = false;
+                    result.Message = "La Categoria no Existe";
+                }
+
+                if (!existProductInThisCategory)
+                {
+                    result.Success = false;
+                    result.Message = "La Categoria tiene Productos Asociados";
+                }
+
+                await _repository.UpdateEntityAsync(new DAL.Entities.Category
+                {
+                    Id = dto.Id,
+                    Deleted = true
+                });
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = ex.Message;
+            }
+            return result;
         }
 
         public async Task<OperationResult> Save(CategoryCreateOrUpdateDTO dto)

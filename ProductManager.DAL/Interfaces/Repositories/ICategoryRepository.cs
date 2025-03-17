@@ -5,6 +5,6 @@ namespace ProductManager.DAL.Interfaces.Repositories
 {
     public interface ICategoryRepository : IBaseRepository<Category>
     {
-
+        Task<bool> categoryHasProduct(int id);
     }
 }
