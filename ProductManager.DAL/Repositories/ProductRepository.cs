@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ProductManager.DAL.Base;
 using ProductManager.DAL.Entities;
 using ProductManager.DAL.Interfaces.Repositories;
@@ -36,6 +37,22 @@ namespace ProductManager.DAL.Repositories
                 var isValid = await BaseValidator<Product>.ValidateEntityAsync(entity);
                 if (!isValid.Success)
                     return isValid;
+
+                var existsCategory = await _context.Categories.AnyAsync(x => x.Id == entity.CategoryId);
+                if (!existsCategory)
+                {
+                    result.Success = false;
+                    result.Message = "La categoría no existe.";
+                    return result;
+                }
+
+                var existsSupplier = await _context.Suppliers.AnyAsync(x => x.Id == entity.SupplierId);
+                if (!existsSupplier)
+                {
+                    result.Success = false;
+                    result.Message = "El proveedor no existe.";
+                    return result;
+                }
 
                 result.Data = await base.SaveEntityAsync(entity);
             }
