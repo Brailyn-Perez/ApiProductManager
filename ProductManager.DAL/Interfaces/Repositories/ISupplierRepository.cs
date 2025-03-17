@@ -5,5 +5,6 @@ namespace ProductManager.DAL.Interfaces.Repositories
 {
     public interface ISupplierRepository : IBaseRepository<Supplier>
     {
+        Task<bool> SupplierHasProduct(int id);
     }
 }

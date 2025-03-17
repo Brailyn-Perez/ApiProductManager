@@ -58,9 +58,42 @@ namespace ProductManager.BL.Services.Supplier
             return result;
         }
 
-        public Task<OperationResult> Remove(DeleteSupplierDTO dto)
+        public async Task<OperationResult> Remove(DeleteSupplierDTO dto)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                var existSupplier = await _repository.ExistsAsync(x => x.Id == dto.Id && x.Deleted == false);
+
+                var supplierHasProduct = await _repository.SupplierHasProduct(dto.Id);
+
+                if (!supplierHasProduct)
+                {
+                    result.Success = false;
+                    result.Message = "El Suplidor tiene productos asociados";
+                    return result;
+                }
+
+                if (!existSupplier)
+                {
+                    result.Success = false;
+                    result.Message = "El Suplidor no existe";
+                    return result;
+                }
+
+                var supplier = await _repository.GetEntityByIdAsync(dto.Id);
+                supplier.Deleted = true;
+
+                await _repository.UpdateEntityAsync(supplier);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
         }
 
         public async Task<OperationResult> Save(CreateOrUpdateSupplierDTO dto)

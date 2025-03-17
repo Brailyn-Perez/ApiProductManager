@@ -78,11 +78,10 @@ namespace ProductManager.BL.Services.Category
                     result.Message = "La Categoria tiene Productos Asociados";
                 }
 
-                await _repository.UpdateEntityAsync(new DAL.Entities.Category
-                {
-                    Id = dto.Id,
-                    Deleted = true
-                });
+                var category = await _repository.GetEntityByIdAsync(dto.Id);
+                category.Deleted = true;
+
+                await _repository.UpdateEntityAsync(category);
 
             }
             catch (Exception ex)

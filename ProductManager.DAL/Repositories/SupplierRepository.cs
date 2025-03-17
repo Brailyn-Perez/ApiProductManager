@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ProductManager.DAL.Base;
 using ProductManager.DAL.Entities;
 using ProductManager.DAL.Interfaces.Repositories;
@@ -50,6 +51,11 @@ namespace ProductManager.DAL.Repositories
                 _logger.LogError(ex, ex.Message);
             }
             return result;
+        }
+
+        public async Task<bool> SupplierHasProduct(int id)
+        {
+            return await _context.Products.AnyAsync(x => x.SupplierId == id && x.Deleted == false);
         }
 
         public override async Task<OperationResult> UpdateEntityAsync(Supplier entity)
