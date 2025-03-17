@@ -20,7 +20,7 @@ namespace ProductManager.BL.Services.Product
             try
             {
                 var products = await _repository.GetAllAsync();
-                products.Select(x => new ProductDTO
+                result.Data = products.Select(x => new ProductDTO
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -30,7 +30,7 @@ namespace ProductManager.BL.Services.Product
                     SupplierId = x.SupplierId
                 }).ToList();
                 result.Success = true;
-                result.Data = products;
+
             }
             catch (Exception ex)
             {
@@ -46,6 +46,12 @@ namespace ProductManager.BL.Services.Product
             try
             {
                 var product = await _repository.GetEntityByIdAsync(id);
+                if (product == null)
+                {
+                    result.Success = false;
+                    result.Message = "Producto no encontrado";
+                    return result;
+                }
                 result.Data = new ProductDTO
                 {
                     Id = product.Id,
@@ -64,9 +70,29 @@ namespace ProductManager.BL.Services.Product
             return result;
         }
 
-        public Task<OperationResult> Remove(DeleteProductDTO dto)
+        public async Task<OperationResult> Remove(DeleteProductDTO dto)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                var exists = await _repository.ExistsAsync(x => x.Id == dto.Id && x.Deleted == false);
+                if (!exists)
+                {
+                    result.Success = false;
+                    result.Message = "Producto no encontrado";
+                }
+                var product = await _repository.GetEntityByIdAsync(dto.Id);
+                product.Deleted = true;
+
+                result = await _repository.UpdateEntityAsync(product);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = ex.Message;
+            }
+            return result;
         }
 
         public async Task<OperationResult> Save(CreateProductDTO dto)
@@ -82,9 +108,7 @@ namespace ProductManager.BL.Services.Product
                     CategoryId = dto.CategoryId,
                     SupplierId = dto.SupplierId
                 };
-                await _repository.SaveEntityAsync(product);
-                result.Success = true;
-                result.Data = product;
+                result = await _repository.SaveEntityAsync(product);
             }
             catch (Exception ex)
             {
@@ -99,14 +123,22 @@ namespace ProductManager.BL.Services.Product
             OperationResult result = new OperationResult();
             try
             {
-                var product = new DAL.Entities.Product
+                var existProduct = await _repository.ExistsAsync(x => x.Id == dto.Id);
+                if (!existProduct)
                 {
-                    Id = dto.Id,
-                    Name = dto.Name,
-                    Price = dto.Price,
-                    Stock = dto.Stock,
-                };
-                await _repository.UpdateEntityAsync(product);
+                    result.Success = false;
+                    result.Message = "Producto no encontrado";
+                    return result;
+                }
+
+                var product = await _repository.GetEntityByIdAsync(dto.Id);
+                product.Name = dto.Name;
+                product.Price = dto.Price;
+                product.Stock = dto.Stock;
+                product.UpdatedAt = DateTime.Now;
+
+
+                result = await _repository.UpdateEntityAsync(product);
                 result.Success = true;
                 result.Data = product;
             }

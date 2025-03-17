@@ -8,7 +8,7 @@ namespace ProductManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -62,6 +62,21 @@ namespace ProductManager.API.Controllers
                 return BadRequest(ModelState);
             }
             var result = await _productService.Update(UpdateProduct);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(DeleteProductDTO deleteProduct)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _productService.Remove(deleteProduct);
             if (result.Success)
             {
                 return Ok(result.Message);

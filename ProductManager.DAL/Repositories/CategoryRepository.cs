@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ProductManager.DAL.Base;
 using ProductManager.DAL.Entities;
 using ProductManager.DAL.Interfaces.Repositories;
@@ -14,6 +15,11 @@ namespace ProductManager.DAL.Repositories
         {
             _context = context;
             _logger = logger;
+        }
+
+        public async Task<bool> categoryHasProduct(int id)
+        {
+           return await _context.Products.AnyAsync(x => x.CategoryId == id && x.Deleted == false);
         }
 
         public override Task<List<Category>> GetAllAsync()

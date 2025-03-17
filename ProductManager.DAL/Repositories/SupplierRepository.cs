@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ProductManager.DAL.Base;
 using ProductManager.DAL.Entities;
 using ProductManager.DAL.Interfaces.Repositories;
@@ -52,6 +53,11 @@ namespace ProductManager.DAL.Repositories
             return result;
         }
 
+        public async Task<bool> SupplierHasProduct(int id)
+        {
+            return await _context.Products.AnyAsync(x => x.SupplierId == id && x.Deleted == false);
+        }
+
         public override async Task<OperationResult> UpdateEntityAsync(Supplier entity)
         {
             OperationResult result = new OperationResult();
@@ -60,6 +66,7 @@ namespace ProductManager.DAL.Repositories
                 var isValid = await BaseValidator<Supplier>.ValidateEntityAsync(entity);
                 if (!isValid.Success)
                     return isValid;
+
                 result.Data = await base.UpdateEntityAsync(entity);
             }
             catch (Exception ex)

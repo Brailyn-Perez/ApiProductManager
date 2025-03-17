@@ -8,7 +8,7 @@ namespace ProductManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SupplierController : ControllerBase
     {
         private readonly ISupplierService _supplierService;
@@ -62,6 +62,23 @@ namespace ProductManager.API.Controllers
                 return BadRequest(ModelState);
             }
             var result = await _supplierService.Update(supplier);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(DeleteSupplierDTO Removesupplier)
+        {
+            var result = await _supplierService.Remove(Removesupplier);
+
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (result.Success)
             {
                 return Ok(result.Message);

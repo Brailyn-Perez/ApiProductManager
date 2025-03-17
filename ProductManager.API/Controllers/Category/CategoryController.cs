@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProductManager.BL.DTOS.Category;
 using ProductManager.BL.Interfaces.Category;
 using ProductManager.DAL.Entities;
@@ -7,7 +9,7 @@ namespace ProductManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -69,6 +71,16 @@ namespace ProductManager.API.Controllers
             return BadRequest(result.Message);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Remove(RemoveCategoryDTO Removecategory)
+        {
+            var result = await _categoryService.Remove(Removecategory);
+            if (result.Success)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
 
     }
 }

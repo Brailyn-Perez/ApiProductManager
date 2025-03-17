@@ -20,14 +20,12 @@ namespace ProductManager.BL.Services.Supplier
             try
             {
                 var suppliers = await _repository.GetAllAsync();
-                suppliers.Select(x => new SupplierDTO
+                result.Data = suppliers.Select(x => new SupplierDTO
                 {
                     Id = x.Id,
                     Name = x.Name,
                     Contact = x.Contact
                 }).ToList();
-                result.Success = true;
-                result.Data = suppliers;
             }
             catch (Exception ex)
             {
@@ -43,12 +41,19 @@ namespace ProductManager.BL.Services.Supplier
             try
             {
                 var supplier = await _repository.GetEntityByIdAsync(id);
+                if (supplier == null)
+                {
+                    result.Success = false;
+                    result.Message = "El Suplidor no Existe";
+                    return result;
+                }
                 result.Data = new SupplierDTO
                 {
                     Id = supplier.Id,
                     Name = supplier.Name,
                     Contact = supplier.Contact
                 };
+
             }
             catch (Exception ex)
             {
@@ -58,9 +63,42 @@ namespace ProductManager.BL.Services.Supplier
             return result;
         }
 
-        public Task<OperationResult> Remove(DeleteSupplierDTO dto)
+        public async Task<OperationResult> Remove(DeleteSupplierDTO dto)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                var existSupplier = await _repository.ExistsAsync(x => x.Id == dto.Id && x.Deleted == false);
+
+                var supplierHasProduct = await _repository.SupplierHasProduct(dto.Id);
+
+                if (supplierHasProduct)
+                {
+                    result.Success = false;
+                    result.Message = "El Suplidor tiene productos asociados";
+                    return result;
+                }
+
+                if (!existSupplier)
+                {
+                    result.Success = false;
+                    result.Message = "El Suplidor no existe";
+                    return result;
+                }
+
+                var supplier = await _repository.GetEntityByIdAsync(dto.Id);
+                supplier.Deleted = true;
+
+                result = await _repository.UpdateEntityAsync(supplier);
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
         }
 
         public async Task<OperationResult> Save(CreateOrUpdateSupplierDTO dto)
@@ -73,8 +111,8 @@ namespace ProductManager.BL.Services.Supplier
                     Name = dto.Name,
                     Contact = dto.Contact
                 };
-                await _repository.SaveEntityAsync(supplier);
-                result.Success = true;
+              result =  await _repository.SaveEntityAsync(supplier);
+
             }
             catch (Exception ex)
             {
@@ -89,14 +127,22 @@ namespace ProductManager.BL.Services.Supplier
             OperationResult result = new OperationResult();
             try
             {
-                var supplier = new DAL.Entities.Supplier
+                var existSupplier = await _repository.ExistsAsync(x => x.Id == dto.Id && x.Deleted == false);
+                if (!existSupplier)
                 {
-                    Id = dto.Id,
-                    Name = dto.Name,
-                    Contact = dto.Contact
-                };
-                await _repository.UpdateEntityAsync(supplier);
-                result.Success = true;
+                    result.Success = false;
+                    result.Message = "El Suplidor no existe";
+                    return result;
+                }
+
+                var supplier = await _repository.GetEntityByIdAsync(dto.Id);
+                supplier.Name = dto.Name;
+                supplier.Contact = dto.Contact;
+                supplier.UpdatedAt = DateTime.Now;
+
+
+                result = await _repository.UpdateEntityAsync(supplier);
+
             }
             catch (Exception ex)
             {
